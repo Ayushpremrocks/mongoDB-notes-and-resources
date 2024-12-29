@@ -1,0 +1,173 @@
+mongoDB lecture: https://www.youtube.com/watch?v=c2M-rlkkT5o
+mongoDB documentation: https://www.mongodb.com
+
+
+-> databases basics
+
+show dbs - show all the databases
+use admin(database name) - to use or create a database
+db.createCollection("collection name") - to create collection in a db
+db.dropDatabase() - to drop a db
+
+
+-> insert
+used this to insert the data
+school> db.students.insertOne({name:"Ayush Prem", age: 20, sgpa: 8.45})
+{
+  acknowledged: true,
+  insertedId: ObjectId('67705f5640d9ecdc674eeb86')
+}
+
+used this to find the data
+school> db.students.find()
+[
+  {
+    _id: ObjectId('67705f5640d9ecdc674eeb86'),
+    name: 'Ayush Prem',
+    age: 20,
+    sgpa: 8.45
+  }
+]
+
+to insert multiple data
+db.students.insertMany([{name:"prem",age:19,sgpa:7.84},
+{name:"kumar",age:18,sgpa:8.12},
+{name:"gupta",age:15,percentage:93.4}])
+
+-> data types
+string
+eg ({name:"Ayush Prem"})
+
+int 
+eg ({age:20})
+
+sgpa
+eg ({sgpa:8.45})
+
+boolean
+eg ({intern: false})
+
+date objects
+eg ({learningDate : new Date("29-12-2024")})
+
+null
+eg ({girlfriend: null})
+
+arrays
+eg ({courses: ["maths","dsa","stats"]})
+
+nested documents
+eg {street: "22B, baker streets", city: "central london"}
+
+-> sorting and listing
+db.students.find().sort({name:1}) (-1 for rev)
+
+limit method
+db.students.find().limit(1)
+
+both limit and sort
+db.students.find().sort({age:-1}).limit(1)
+
+
+
+-> find
+to find someone
+db.students.find({name: "Ayush Prem"})
+
+to get specific data
+db.students.find({},{name: true})
+
+no _id
+db.students.find({},{_id:false, name: true})
+
+
+-> update
+set
+db.students.updateOne({name:"Ayush Prem"},{$set:{intern:true}})
+
+unset
+db.students.updateOne({name:"Ayush Prem"},{$unset:{intern:""}})
+
+insert Many
+db.students.updateMany({},{$set:{intern:false}})
+
+exist
+db.students.updateMany({intern:{$exists:false}},{$set:{intern:true}})
+
+-> delete
+delete one
+db.students.deleteOne({name:"gupta})
+
+delete Many
+db.students.deleteMany({intern: true})
+
+exist
+db.students.deleteMany({percentage:{$exists:true}})
+
+
+->comparison operators
+not 
+db.students.find({name:{$ne:"Ayush Prem"}})
+
+less than
+db.students.find({age:{$lt:20}})
+
+less than or equal to
+db.students.find({age:{$lte:20}})
+
+greater than
+db.students.find({age:{$gt:15}})
+
+greater than or equal
+db.students.find({age:{$gte:15}})
+
+b/w
+db.students.find({sgpa:{$gte:8,$lte:10}})
+
+within an arrays
+db.students.find({name:{$in:["Ayush Prem","prem"]}})
+
+not in
+db.students.find({name:{$nin:["Ayush Prem","prem"]}})
+
+
+-> logical operators
+
+and
+db.students.find({$and:[{sgpa:{$gte:8}},{age:{$gte:18}}]})
+
+or
+db.students.find({$or:[{sgpa:{$gte:8}},{age:{$gte:18}}]})
+
+nor
+db.students.find({$nor:[{sgpa:{$gte:8}},{age:{$gte:18}}]})
+
+not
+db.students.find({age:{$not:{$gte:20}}})
+
+
+-> indexes
+
+use linear search
+db.students.find({name:"kumar"}).explain("executionStats") 
+
+create indexes
+db.students.createIndex({name:1})
+now search, it will use B-tree
+db.students.find({name:"kumar"}).explain("executionStats")
+
+to get indexes
+db.students.getIndexes()
+
+drop indexes
+db.students.dropIndex("name_1")
+
+-> collections
+
+to get collection
+show collections
+
+capped is used to set size, size is set in bytes, max is maximum no of docs/entries
+autoIndexId is used to create indexes
+db.createCollection("teachers",{capped:true,size:10000000,max:100},
+{autoIndexId:false})
